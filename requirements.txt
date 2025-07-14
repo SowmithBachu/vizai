@@ -1,0 +1,9 @@
+pandas
+numpy
+seaborn
+matplotlib
+google-generativeai
+openpyxl
+Flask
+fpdf
+Pillow

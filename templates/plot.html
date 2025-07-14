@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VizAI - Visualization & Insights</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body { background-color: #18191a !important; color: #f5f6fa; }
+        .card { background-color: #23272b; color: #f5f6fa; }
+        .form-control, .form-select { background-color: #23272b; color: #f5f6fa; border: 1px solid #444; }
+        .btn-primary { background-color: #4f8cff; border: none; }
+        .btn-primary:hover { background-color: #2563eb; }
+        .alert { color: #fff; }
+        .alert-danger { background-color: #c0392b; }
+        .alert-warning { background-color: #e67e22; }
+        .alert-info { background-color: #2980b9; }
+        .btn-success { background-color: #27ae60; border: none; }
+        .btn-success:hover { background-color: #219150; }
+        .btn-outline-secondary { color: #f5f6fa; border-color: #4f8cff; }
+        .btn-outline-secondary:hover { background-color: #4f8cff; color: #fff; }
+        .btn-link { color: #4f8cff; }
+        .btn-link:hover { color: #2563eb; }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h2 class="card-title text-center mb-4">📊 Visualization & AI Insights</h2>
+                        <form method="POST">
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label for="chart_type" class="form-label">Chart Type</label>
+                                    <select class="form-select" id="chart_type" name="chart_type" required>
+                                        {% for ct in chart_types %}
+                                            <option value="{{ ct }}">{{ ct }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="x_axis" class="form-label">X-axis</label>
+                                    <select class="form-select" id="x_axis" name="x_axis">
+                                        <option value="">None</option>
+                                        {% for col in columns %}
+                                            <option value="{{ col }}">{{ col }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="y_axis" class="form-label">Y-axis</label>
+                                    <select class="form-select" id="y_axis" name="y_axis">
+                                        <option value="">None</option>
+                                        {% for col in columns %}
+                                            <option value="{{ col }}">{{ col }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Generate Plot & Insight</button>
+                        </form>
+                        {% if plot_url %}
+                            <hr>
+                            <h5 class="mt-4">Generated Plot</h5>
+                            <img src="/static/plot.png" alt="Plot" class="img-fluid mb-3" style="max-height:400px;">
+                        {% endif %}
+                        {% if insight %}
+                            <div class="alert alert-success">
+                                <h5>🧠 AI Insight</h5>
+                                <p>{{ insight }}</p>
+                            </div>
+                            <a href="{{ url_for('download_pdf', chart_type=request.form.get('chart_type', '') ) }}" class="btn btn-outline-secondary w-100">Download Insights as PDF</a>
+                        {% endif %}
+                        <a href="{{ url_for('clean') }}" class="btn btn-link mt-3">⬅ Back to Data Cleaning</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 
