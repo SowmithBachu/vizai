@@ -1,13 +1,14 @@
-from flask import Flask, render_template, request, send_file, flash
+from flask import Flask, render_template, request, send_file, flash, jsonify, make_response
 import pandas as pd
 import os
 import tempfile
 from data_cleaner import clean_data
 from plot_generator import generate_plot
-from insight_generator import init_gemini, generate_insight
+from insight_generator import init_gemini, generate_insight, handle_nl_query
 from fpdf import FPDF
 import matplotlib.pyplot as plt
 from dotenv import load_dotenv
+import io
 
 load_dotenv()
 
@@ -21,14 +22,29 @@ def index():
     cleaned_df = None
     plot_url = None
     insight = None
+    nl_query = None
+    nl_answer = None
     chart_types = [
         "scatterplot", "lineplot", "barplot", "countplot", "boxplot", "violinplot",
         "stripplot", "swarmplot", "histplot", "kdeplot",
-        "pairplot", "heatmap", "clustermap", "jointplot", "rugplot"
+        "pairplot", "heatmap", "annotated_heatmap", "clustermap", "jointplot", "rugplot", "forecast"
     ]
     columns = []
     file_uploaded = False
     if request.method == 'POST':
+        # Natural language query
+        if request.form.get('nl_query'):
+            nl_query = request.form.get('nl_query')
+            if request.form.get('data_csv'):
+                import io
+                df = pd.read_csv(io.StringIO(request.form['data_csv']))
+                cleaned_df = clean_data(df.copy())
+                try:
+                    model = init_gemini()
+                    nl_answer = handle_nl_query(model, cleaned_df, nl_query)
+                except Exception as e:
+                    nl_answer = f"Failed to answer query: {e}"
+            return render_template('singlepage.html', file_uploaded=True, df=df, cleaned_df=cleaned_df, columns=columns, chart_types=chart_types, plot_url=plot_url, insight=insight, data_csv=request.form.get('data_csv'), nl_query=nl_query, nl_answer=nl_answer)
         # File upload
         if 'file' in request.files and request.files['file'].filename:
             file = request.files['file']
@@ -104,8 +120,53 @@ def index():
                 return send_file(pdf_path, as_attachment=True)
         # For form persistence, store cleaned data as CSV in hidden field
         data_csv = cleaned_df.to_csv(index=False) if cleaned_df is not None else ''
-        return render_template('singlepage.html', file_uploaded=file_uploaded, df=df, cleaned_df=cleaned_df, columns=columns, chart_types=chart_types, plot_url=plot_url, insight=insight, data_csv=data_csv)
+        return render_template('singlepage.html', file_uploaded=file_uploaded, df=df, cleaned_df=cleaned_df, columns=columns, chart_types=chart_types, plot_url=plot_url, insight=insight, data_csv=data_csv, nl_query=nl_query, nl_answer=nl_answer)
     return render_template('singlepage.html', file_uploaded=False)
+
+@app.route('/dashboard')
+def dashboard():
+    return render_template('dashboard.html')
+
+@app.route('/api/chart', methods=['POST'])
+def api_chart():
+    try:
+        data = request.json
+        chart_type = data.get('chartType')
+        x_axis = data.get('xAxis')
+        y_axis = data.get('yAxis')
+        data_csv = data.get('dataCsv')
+        if not data_csv or not chart_type:
+            return jsonify({'error': 'Missing data or chart type'}), 400
+        df = pd.read_csv(io.StringIO(data_csv))
+        cleaned_df = clean_data(df.copy())
+        plot = generate_plot(cleaned_df, chart_type, x_axis, y_axis)
+        if plot:
+            # Handle Plotly figures for geomap and sankey
+            if chart_type in ["geomap", "sankey"]:
+                try:
+                    import plotly.io as pio
+                    img_bytes = plot.to_image(format="png", engine="kaleido")
+                except Exception as e:
+                    return jsonify({'error': f'Plotly export failed: {e}'}), 500
+                response = make_response(img_bytes)
+                response.headers.set('Content-Type', 'image/png')
+                return response
+            if chart_type in ["pairplot", "clustermap", "jointplot"]:
+                fig = plot.figure if hasattr(plot, "figure") else plot
+            else:
+                fig = plot
+            buf = io.BytesIO()
+            fig.savefig(buf, format="png", bbox_inches='tight')
+            if hasattr(fig, 'clf'):
+                plt.close(fig)
+            buf.seek(0)
+            response = make_response(buf.read())
+            response.headers.set('Content-Type', 'image/png')
+            return response
+        else:
+            return jsonify({'error': 'Could not generate plot'}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True) 

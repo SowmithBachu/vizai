@@ -30,4 +30,26 @@ Focus on trends, clusters, outliers, and correlations.
         response = model.generate_content([image, prompt])
     else:
         response = model.generate_content(prompt)
-    return response.text
+    # Post-process to ensure bullet points as HTML list
+    text = response.text.strip()
+    # Split into lines, filter bullet points, and wrap in <ul>
+    points = [line.strip('-•* ') for line in text.splitlines() if line.strip().startswith(('-', '•', '*'))]
+    if points:
+        html = '<ul>' + ''.join(f'<li>{p}</li>' for p in points) + '</ul>'
+        return html
+    else:
+        # fallback: return as is
+        return text
+
+def handle_nl_query(model, df, user_query):
+    prompt = f"""
+You are a data analyst. The user has asked a question about their data:
+"{user_query}"
+
+Here is the data (first 20 rows):
+{df.head(20).to_csv(index=False)}
+
+Answer the user's question as clearly as possible, using bullet points or a short paragraph if appropriate. If the question is about trends, time periods, or aggregations, provide a concise summary and, if possible, suggest what chart or analysis would help.
+"""
+    response = model.generate_content(prompt)
+    return response.text.strip()

@@ -173,6 +173,22 @@
                     </div>
                     <hr class="glow-divider">
                     <div class="section-container">
+                        <h4 class="section-title">💬 Ask a Question (Natural Language Query)</h4>
+                        <form method="POST">
+                            <input type="hidden" name="data_csv" value="{{ cleaned_df.to_csv(index=False) }}">
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" name="nl_query" placeholder="e.g. Show me sales trends for the last quarter" value="{{ nl_query or '' }}" required>
+                                <button class="btn btn-info" type="submit">Ask Gemini</button>
+                            </div>
+                        </form>
+                        {% if nl_answer %}
+                        <div class="alert alert-info" style="white-space:pre-line; margin-top:1rem;">
+                            <strong>Gemini Answer:</strong><br>{{ nl_answer }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <hr class="glow-divider">
+                    <div class="section-container">
                         <h4 class="section-title">📊 Visualize & Analyze</h4>
                         <form method="POST">
                             <input type="hidden" name="data_csv" value="{{ cleaned_df.to_csv(index=False) }}">
@@ -182,9 +198,16 @@
                                     <select class="form-select" id="chart_type" name="chart_type" required>
                                         <option value="">Select...</option>
                                         {% for ct in chart_types %}
-                                            <option value="{{ ct }}">{{ ct }}</option>
+                                            {% if ct == 'heatmap' %}
+                                                <option value="{{ ct }}" title="Correlation heatmap (lower triangle, masked)">Heatmap (Correlation)</option>
+                                            {% elif ct == 'annotated_heatmap' %}
+                                                <option value="{{ ct }}" title="Full annotated correlation heatmap">Annotated Heatmap (Correlation)</option>
+                                            {% else %}
+                                                <option value="{{ ct }}">{{ ct }}</option>
+                                            {% endif %}
                                         {% endfor %}
                                     </select>
+                                    <small class="form-text text-muted" style="color:#7ecbff;">Select <b>Heatmap</b> or <b>Annotated Heatmap</b> for correlation analysis of all numeric columns.</small>
                                 </div>
                                 <div class="col-md-4">
                                     <label for="x_axis" class="form-label">X-axis</label>
@@ -211,12 +234,26 @@
                             <div style="background:rgba(36,40,47,0.7); border-radius:1rem; box-shadow:0 2px 12px 0 rgba(79,140,255,0.09); padding:1rem; margin-top:1.2rem;">
                                 <h5 class="mt-2" style="color:#7ecbff; font-weight:600;">Generated Plot</h5>
                                 <img src="/static/plot.png" alt="Plot" class="img-fluid mb-3" style="max-height:400px; border-radius:1rem; box-shadow:0 4px 24px 0 rgba(79,140,255,0.13);">
+                                <button class="btn btn-outline-primary w-100 mb-2" type="button" onclick="pinChartToDashboard()">📌 Pin to Dashboard</button>
                             </div>
+                            <script>
+                            function pinChartToDashboard() {
+                                // Gather chart config
+                                const chartType = document.getElementById('chart_type').value;
+                                const xAxis = document.getElementById('x_axis').value;
+                                const yAxis = document.getElementById('y_axis').value;
+                                const dataCsv = document.querySelector('input[name="data_csv"]').value;
+                                let pinned = JSON.parse(localStorage.getItem('vizai_pinned_charts') || '[]');
+                                pinned.push({ chartType, xAxis, yAxis, dataCsv, timestamp: Date.now() });
+                                localStorage.setItem('vizai_pinned_charts', JSON.stringify(pinned));
+                                alert('Chart pinned to dashboard! Go to the Dashboard to view all pinned charts.');
+                            }
+                            </script>
                         {% endif %}
                         {% if insight %}
                             <div class="ai-insight">
                                 <h5 style="color:#fff; font-weight:700; letter-spacing:0.5px;">🧠 AI Insight</h5>
-                                <p style="color:#fff; font-size:1.1rem;">{{ insight }}</p>
+                                <div style="color:#fff; font-size:1.1rem;">{{ insight|safe }}</div>
                             </div>
                             <form method="POST">
                                 <input type="hidden" name="data_csv" value="{{ cleaned_df.to_csv(index=False) }}">

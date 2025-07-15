@@ -7,3 +7,7 @@ openpyxl
 Flask
 fpdf
 Pillow
+plotly
+kaleido
+scipy
+prophet
