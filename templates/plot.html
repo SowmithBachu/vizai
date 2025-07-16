@@ -21,6 +21,37 @@
         .btn-outline-secondary:hover { background-color: #4f8cff; color: #fff; }
         .btn-link { color: #4f8cff; }
         .btn-link:hover { color: #2563eb; }
+        .form-select {
+            background: #23272b;
+            color: #f5f6fa;
+            border: 1.5px solid #444a5a;
+            border-radius: 0.8rem;
+            box-shadow: 0 2px 8px 0 rgba(0,0,0,0.10);
+            padding-right: 2.5rem;
+            font-weight: 500;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s, color 0.2s;
+            appearance: none;
+            position: relative;
+        }
+        .form-select:focus {
+            border-color: #aaa;
+            box-shadow: 0 0 0 0.15rem rgba(255,255,255,0.08);
+            outline: none;
+            background: #23272b;
+            color: #fff;
+        }
+        .form-select:hover {
+            border-color: #aaa;
+            background: #2d323a;
+            color: #fff;
+        }
+        /* Custom dropdown arrow */
+        .form-select {
+            background-image: url('data:image/svg+xml;utf8,<svg fill="%23f5f6fa" height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7.293 7.293a1 1 0 011.414 0L10 8.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.2rem;
+        }
     </style>
 </head>
 <body>

@@ -123,10 +123,6 @@ def index():
         return render_template('singlepage.html', file_uploaded=file_uploaded, df=df, cleaned_df=cleaned_df, columns=columns, chart_types=chart_types, plot_url=plot_url, insight=insight, data_csv=data_csv, nl_query=nl_query, nl_answer=nl_answer)
     return render_template('singlepage.html', file_uploaded=False)
 
-@app.route('/dashboard')
-def dashboard():
-    return render_template('dashboard.html')
-
 @app.route('/api/chart', methods=['POST'])
 def api_chart():
     try:

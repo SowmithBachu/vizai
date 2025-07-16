@@ -22,20 +22,21 @@ The selected columns were:
 X-axis: {x_col or 'Not used'}
 Y-axis: {y_col or 'Not used'}
 
-Based on the image of the plot, provide 3–5 insights in bullet points.
-Focus on trends, clusters, outliers, and correlations.
+Based on the image of the plot, provide 3–5 insights in bullet points. Each point should be a full sentence. Do not include any introduction or summary, just the points. Focus on trends, clusters, outliers, and correlations. Format your answer as Markdown bullet points.
 """
     if fig:
         image = fig_to_image(fig)
         response = model.generate_content([image, prompt])
     else:
         response = model.generate_content(prompt)
-    # Post-process to ensure bullet points as HTML list
     text = response.text.strip()
-    # Split into lines, filter bullet points, and wrap in <ul>
+    # Extract up to 4 bullet points
     points = [line.strip('-•* ') for line in text.splitlines() if line.strip().startswith(('-', '•', '*'))]
+    points = [p for p in points if p]  # Remove empty
+    points = points[:4]  # Limit to 4
     if points:
-        html = '<ul>' + ''.join(f'<li>{p}</li>' for p in points) + '</ul>'
+        html = '<div class="font-semibold text-lg mb-2 text-pink-400 flex items-center gap-2"><i class="lucide lucide-brain-circuit w-5 h-5 text-pink-400"></i>AI Insight</div>'
+        html += '<ul class="list-disc pl-6 text-base text-slate-100">' + ''.join(f'<li class="mb-2">{p}</li>' for p in points) + '</ul>'
         return html
     else:
         # fallback: return as is
