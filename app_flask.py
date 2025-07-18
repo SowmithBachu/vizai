@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, send_file, flash, jsonify, make_response
+from flask import Flask, render_template, request, send_file, flash, jsonify, make_response, redirect
 import pandas as pd
 import os
 import tempfile
@@ -16,7 +16,11 @@ app = Flask(__name__)
 app.secret_key = 'supersecretkey'
 UPLOAD_FOLDER = tempfile.gettempdir()
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
+def root():
+    return redirect('/landing')
+
+@app.route('/app', methods=['GET', 'POST'])
 def index():
     df = None
     cleaned_df = None
@@ -44,6 +48,8 @@ def index():
                     nl_answer = handle_nl_query(model, cleaned_df, nl_query)
                 except Exception as e:
                     nl_answer = f"Failed to answer query: {e}"
+            # Always show the previous plot if it exists
+            plot_url = '/static/plot.png' if os.path.exists('static/plot.png') else None
             return render_template('singlepage.html', file_uploaded=True, df=df, cleaned_df=cleaned_df, columns=columns, chart_types=chart_types, plot_url=plot_url, insight=insight, data_csv=request.form.get('data_csv'), nl_query=nl_query, nl_answer=nl_answer)
         # File upload
         if 'file' in request.files and request.files['file'].filename:
@@ -85,14 +91,11 @@ def index():
                 try:
                     plot = generate_plot(cleaned_df, chart_type, x_axis, y_axis)
                     if plot:
-                        if chart_type in ["pairplot", "clustermap", "jointplot"]:
-                            fig = plot.figure if hasattr(plot, "figure") else plot
-                        else:
-                            fig = plot
+                        # Always treat plot as a Figure object for saving
+                        fig = plot.figure if hasattr(plot, "figure") else plot
                         plot_path = os.path.join('static', 'plot.png')
                         fig.savefig(plot_path)
-                        if isinstance(fig, plt.Figure):
-                            plt.close(fig)
+                        plt.close(fig)
                         plot_url = '/static/plot.png'
                         try:
                             model = init_gemini()
@@ -122,6 +125,10 @@ def index():
         data_csv = cleaned_df.to_csv(index=False) if cleaned_df is not None else ''
         return render_template('singlepage.html', file_uploaded=file_uploaded, df=df, cleaned_df=cleaned_df, columns=columns, chart_types=chart_types, plot_url=plot_url, insight=insight, data_csv=data_csv, nl_query=nl_query, nl_answer=nl_answer)
     return render_template('singlepage.html', file_uploaded=False)
+
+@app.route('/landing')
+def landing():
+    return render_template('landing.html')
 
 @app.route('/api/chart', methods=['POST'])
 def api_chart():

@@ -7,12 +7,13 @@ def clean_data(df):
     df.dropna(axis=1, how='all', inplace=True)
     for col in df.select_dtypes(include=[np.number]).columns:
         median_value = df[col].median()
-        df[col].fillna(median_value, inplace=True)
+        # Avoid chained assignment warning
+        df[col] = df[col].fillna(median_value)
     for col in df.select_dtypes(include=['object']).columns:
         if df[col].isnull().any():
             try:
                 mode_val = df[col].mode()[0]
-                df[col].fillna(mode_val, inplace=True)
+                df[col] = df[col].fillna(mode_val)
             except:
-                df[col].fillna("Unknown", inplace=True)
+                df[col] = df[col].fillna("Unknown")
     return df

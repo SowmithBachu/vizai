@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VizAI - Welcome</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+      body {
+        background: linear-gradient(120deg, #18181b 0%, #23272f 100%) !important;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+      /* Futuristic animated gradient background */
+      .bg-animated {
+        background: linear-gradient(135deg, #0f172a 0%, #0ea5e9 100%);
+        background-size: 200% 200%;
+        animation: gradientMove 8s ease-in-out infinite;
+      }
+      @keyframes gradientMove {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+      }
+    </style>
+</head>
+<body class="bg-animated text-slate-100">
+    <header class="w-full flex flex-col items-center justify-center py-12 px-4">
+        <h1 class="text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 drop-shadow-[0_4px_32px_rgba(34,211,238,0.45)] mb-4 tracking-tight flex items-center gap-4">
+            <img src="/static/logo.png" alt="VizAI Logo" class="w-16 h-16 object-contain inline-block align-middle">
+            VizAI
+        </h1>
+        <p class="text-2xl text-cyan-200 font-semibold text-center max-w-2xl mb-8 drop-shadow-lg">
+            Transform your data into <span class="text-cyan-400 font-bold">stunning charts</span> and <span class="text-emerald-400 font-bold">AI-powered insights</span> instantly.<br>
+            <span class="text-blue-300">No code. No hassle. Just upload, visualize, and understand.</span>
+        </p>
+        <a href="/app" class="px-10 py-4 rounded-2xl bg-gradient-to-r from-cyan-500 via-emerald-400 to-blue-500 text-white text-2xl font-bold shadow-xl transition hover:scale-105 hover:shadow-2xl focus:ring-4 focus:ring-cyan-400/50 border-none outline-none ring-2 ring-cyan-400/30 animate-glow relative overflow-hidden">
+            <span class="relative z-10 flex items-center gap-3">Get Started</span>
+            <span class="absolute inset-0 bg-cyan-400 opacity-10 blur-2xl animate-pulse"></span>
+        </a>
+    </header>
+    <main class="container mx-auto px-4 flex flex-col items-center">
+        <h2 class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-emerald-400 to-blue-500 mb-12 text-center tracking-tight drop-shadow-lg">Chart Types</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 mb-16 w-full max-w-6xl">
+            <!-- Chart image cards -->
+            {% for card in [
+                {"src": "/static/scatterplot.png", "alt": "Scatterplot", "title": "Scatterplot", "color": "from-cyan-400 to-blue-500"},
+                {"src": "/static/lineplot.png", "alt": "Lineplot", "title": "Lineplot", "color": "from-violet-400 to-cyan-400"},
+                {"src": "/static/barplot.jpg", "alt": "Barplot", "title": "Barplot", "color": "from-yellow-400 to-orange-400"},
+                {"src": "/static/boxplot.png", "alt": "Boxplot", "title": "Boxplot", "color": "from-blue-400 to-indigo-400"},
+                {"src": "/static/violinplot.jpg", "alt": "Violinplot", "title": "Violinplot", "color": "from-pink-400 to-fuchsia-400"},
+                {"src": "/static/stripplot.png", "alt": "Stripplot", "title": "Stripplot", "color": "from-green-400 to-lime-400"},
+                {"src": "/static/swarmplot.png", "alt": "Swarmplot", "title": "Swarmplot", "color": "from-orange-400 to-amber-400"},
+                {"src": "/static/histplot.png", "alt": "Histplot", "title": "Histplot", "color": "from-lime-400 to-green-400"},
+                {"src": "/static/kdeplot.png", "alt": "KDE Plot", "title": "KDE Plot", "color": "from-fuchsia-400 to-pink-400"},
+                {"src": "/static/countplot.png", "alt": "Countplot", "title": "Countplot", "color": "from-amber-400 to-orange-400"},
+                {"src": "/static/heatmap.png", "alt": "Heatmap", "title": "Heatmap", "color": "from-red-400 to-pink-400"},
+                {"src": "/static/annotated heatmap.jpg", "alt": "Annotated Heatmap", "title": "Annotated Heatmap", "color": "from-cyan-200 to-blue-200"},
+                {"src": "/static/pairplot.png", "alt": "Pairplot", "title": "Pairplot", "color": "from-emerald-400 to-cyan-400"},
+                {"src": "/static/jointplot.png", "alt": "Jointplot", "title": "Jointplot", "color": "from-indigo-400 to-blue-400"},
+                {"src": "/static/clustermap_1_0.png", "alt": "Clustermap", "title": "Clustermap", "color": "from-purple-400 to-indigo-400"},
+                {"src": "/static/reguplot.png", "alt": "Rugplot", "title": "Rugplot", "color": "from-gray-400 to-cyan-400"}
+            ] %}
+            <div class="feature-card group rounded-3xl p-7 flex flex-col items-center shadow-2xl bg-white/10 backdrop-blur-lg border border-cyan-400/20 hover:border-cyan-400/80 transition-all duration-200 relative overflow-hidden">
+                <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-32 h-1.5 rounded-full bg-gradient-to-r {{ card.color }} blur-lg opacity-60 group-hover:opacity-90 transition"></div>
+                <img src="{{ card.src }}" alt="{{ card.alt }}" class="w-36 h-36 object-contain mb-4 rounded-xl shadow-lg border-2 border-white/10 group-hover:scale-105 transition duration-200">
+                <h3 class="text-2xl font-bold mb-1 text-transparent bg-clip-text bg-gradient-to-r {{ card.color }} drop-shadow-lg tracking-tight">{{ card.title }}</h3>
+            </div>
+            {% endfor %}
+        </div>
+    </main>
+    <script>lucide.createIcons();</script>
+</body>
+</html> 

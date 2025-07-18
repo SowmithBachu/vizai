@@ -8,19 +8,37 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons CDN -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+      body {
+        background: linear-gradient(135deg, #18181b 0%, #23272f 100%) !important;
+        color: #e5e7eb;
+        min-height: 100vh;
+      }
+      .main-gradient-bg {
+        background: linear-gradient(120deg, #23272f 60%, #18181b 100%);
+      }
+      .section-dark {
+        background: rgba(30, 41, 59, 0.92);
+        border: 1.5px solid #334155;
+        box-shadow: 0 4px 32px 0 rgba(0,0,0,0.18);
+      }
+      .text-glow {
+        text-shadow: 0 2px 8px #0ea5e9, 0 1px 1px #000;
+      }
+    </style>
 </head>
 <body class="bg-black min-h-screen text-slate-100">
     <!-- Header -->
     <header class="w-full bg-slate-900/90 shadow-lg rounded-b-3xl mb-10 py-6 px-4 flex items-center justify-center">
         <h1 class="text-3xl font-bold text-emerald-400 flex items-center gap-3">
-            <i data-lucide="bar-chart-3" class="w-8 h-8 text-emerald-400"></i>
+            <img src="/static/logo.png" alt="VizAI Logo" class="w-10 h-10 object-contain inline-block align-middle">
             VizAI - All-in-One Analyzer
         </h1>
     </header>
     <div class="container mx-auto py-8 px-2">
         <div class="flex justify-center">
             <div class="w-full max-w-7xl px-4">
-                <div class="rounded-3xl shadow-2xl bg-gradient-to-br from-slate-800/80 to-slate-900/90 p-12 mb-12 border border-slate-700">
+                <div class="rounded-3xl section-dark p-12 mb-12">
                     {% with messages = get_flashed_messages(with_categories=true) %}
                       {% if messages %}
                         {% for category, message in messages %}
@@ -47,6 +65,7 @@
                     {% endif %}
                     <!-- Step 2: Preview & Clean -->
                     {% if file_uploaded and df is not none %}
+                    <div id="preview-anchor"></div>
                     <div class="rounded-2xl bg-slate-900/80 p-6 mb-6 shadow-lg border border-slate-700">
                         <h4 class="text-xl font-semibold mb-4 text-orange-400 flex items-center gap-2"><i data-lucide="search" class="w-5 h-5 text-orange-400"></i> Data Preview</h4>
                         <div class="flex flex-wrap gap-4 mb-4 items-center justify-end">
@@ -142,7 +161,7 @@
                     </div>
                     <div class="rounded-2xl bg-gradient-to-br from-slate-800/80 to-slate-900/80 p-6 mb-6 shadow-lg border border-slate-700">
                         <h4 class="text-xl font-semibold mb-4 text-indigo-400 flex items-center gap-2"><i data-lucide="bar-chart-3" class="w-5 h-5 text-indigo-400"></i> Visualize & Analyze</h4>
-                        <form method="POST" id="plot-form">
+                        <form method="POST" id="plot-form" onsubmit="window.location.hash='#plot-anchor';">
                             <input type="hidden" name="data_csv" value="{{ cleaned_df.to_csv(index=False) }}">
                             <div class="flex flex-wrap gap-4 mb-4">
                                 <div class="flex-1 min-w-[180px]">
@@ -192,6 +211,27 @@
                                 <i data-lucide="wand-2" class="w-5 h-5"></i> Generate Plot & Insight
                             </button>
                         </form>
+                        <!-- Loading spinner overlay -->
+                        <div id="loading-spinner" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50 hidden">
+                          <div class="flex flex-col items-center">
+                            <svg class="animate-spin h-12 w-12 text-cyan-400 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                            </svg>
+                            <span class="text-cyan-200 text-lg font-semibold">Generating, please wait...</span>
+                          </div>
+                        </div>
+                        <script>
+                        // Show spinner on form submit
+                        document.getElementById('plot-form').addEventListener('submit', function() {
+                          document.getElementById('loading-spinner').classList.remove('hidden');
+                        });
+                        // Hide spinner on page load (in case of back navigation)
+                        window.addEventListener('DOMContentLoaded', function() {
+                          document.getElementById('loading-spinner').classList.add('hidden');
+                        });
+                        </script>
+                        <div id="visualize-analyze-anchor"></div>
                         <div id="plot-anchor"></div>
                         {% if plot_url %}
                             <div class="rounded-xl bg-slate-900/80 p-4 mt-6 shadow-lg border border-slate-700 flex flex-col items-center">
@@ -214,9 +254,9 @@
                             </form>
                         {% endif %}
                         <!-- Ask a Question section as a separate card -->
-                        <div class="rounded-2xl bg-gradient-to-br from-slate-800/80 to-slate-900/80 p-6 mb-6 shadow-lg border border-slate-700">
+                        <div class="rounded-2xl bg-gradient-to-br from-slate-800/80 to-slate-900/80 p-6 mb-6 shadow-lg border border-slate-700 mt-10" id="ask-question-anchor">
                             <h4 class="text-xl font-semibold mb-4 text-rose-400 flex items-center gap-2"><i data-lucide="message-circle" class="w-5 h-5 text-rose-400"></i> Ask a Question (Natural Language Query)</h4>
-                            <form method="POST">
+                            <form method="POST" id="askviz-form" onsubmit="window.location.hash='#ask-question-anchor';">
                                 <input type="hidden" name="data_csv" value="{{ cleaned_df.to_csv(index=False) }}">
                                 <div class="flex mb-4 gap-2">
                                     <input type="text" class="flex-1 rounded-lg border border-slate-600 bg-slate-900/80 text-slate-100 p-2 focus:ring-2 focus:ring-cyan-400 focus:outline-none" name="nl_query" placeholder="e.g. Show me sales trends for the last quarter" value="{{ nl_query or '' }}" required>
@@ -244,6 +284,16 @@
         var anchor = document.getElementById('plot-anchor');
         if (anchor && window.location.hash !== '#no-scroll') {
           anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        // Auto-scroll to preview after upload
+        var previewAnchor = document.getElementById('preview-anchor');
+        if (previewAnchor && window.location.hash !== '#no-scroll') {
+          previewAnchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        // Auto-scroll to Visualize & Analyze after plot generation
+        var vaAnchor = document.getElementById('visualize-analyze-anchor');
+        if (vaAnchor && window.location.hash !== '#no-scroll' && document.activeElement && document.activeElement.id === 'plot-form') {
+          vaAnchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       });
     </script>
