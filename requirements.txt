@@ -12,3 +12,4 @@ kaleido
 scipy
 prophet
 gunicorn
+python-dotenv
