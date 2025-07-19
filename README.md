@@ -1,6 +1,6 @@
 # 📊 VizAI — GenAI-powered Visual Data Analyzer
 
-🚀 **Live Demo:** [Click here to try the app on Render](https://vizai-flask.onrender.com/)
+🚀 **Live Demo:** [Click here to try the app on Render](https://viz-ai.onrender.com/)
 
 VizAI is an intelligent data visualization and insight generation tool powered by Pandas, Seaborn, and Gemini 1.5 Flash.  
 It helps users upload raw data, clean it, generate rich charts, and receive smart insights directly from the visuals — using the power of generative AI.
@@ -70,62 +70,10 @@ Here's how VizAI works, end-to-end:
 ## 🚀 Deployment
 
 ### Live Demo
-The application is deployed on **Render** and accessible at: [https://vizai-flask.onrender.com/](https://vizai-flask.onrender.com/)
+The application is deployed on **Render** and accessible at: [https://viz-ai.onrender.com/](https://viz-ai.onrender.com/)
 
 ### Local Development
 To run the application locally:
 
 1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/SowmithBachu/vizai.git
-   cd vizai
    ```
-
-2. **Install dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. **Set up environment variables:**
-   Create a `.env` file in the root directory and add:
-   ```
-   GOOGLE_API_KEY=your_gemini_api_key_here
-   ```
-
-4. **Run the application:**
-   ```bash
-   python app_flask.py
-   ```
-
-5. **Access the application:**
-   Open your browser and go to `http://localhost:5000`
-
-### Environment Variables
-- `GOOGLE_API_KEY`: Your Google Gemini API key (required for AI insights)
-
-## 🤝 Contributions & Issues
-
-Have ideas to improve VizAI? Found a bug or want to add more chart types?
-
-Feel free to:
-
-- 🛠️ Fork the repo
-- 📦 Create a new branch
-- 📝 Make your changes
-- 🚀 Submit a pull request
-
-> Found an issue or need help? [Open an issue](https://github.com/SowmithBachu/vizai/issues) and describe the problem clearly.
-
-All contributions — code, design, documentation, or testing — are welcome!
-
-## 📄 License
-
-This project is open source and available under the [MIT License](LICENSE).
-
-## 🙏 Acknowledgments
-
-- Built with Flask and Python
-- Powered by Google Gemini AI
-- Deployed on Render
-- Inspired by the need for simple, AI-powered data visualization tools
-
