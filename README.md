@@ -1,6 +1,6 @@
 # 📊 VizAI — GenAI-powered Visual Data Analyzer
 
-🚀 **Live Demo:** [Click here to try the app on Streamlit](https://vizinsight.streamlit.app/)
+🚀 **Live Demo:** [Click here to try the app on Render](https://vizai-flask.onrender.com/)
 
 VizAI is an intelligent data visualization and insight generation tool powered by Pandas, Seaborn, and Gemini 1.5 Flash.  
 It helps users upload raw data, clean it, generate rich charts, and receive smart insights directly from the visuals — using the power of generative AI.
@@ -23,7 +23,7 @@ All in one browser window, with zero setup.
 
 ## 🔄 Project Workflow
 
-Here's how AutoVizAI works, end-to-end:
+Here's how VizAI works, end-to-end:
 
 1. **Upload File**  
    The user uploads a `.csv` or `.xlsx` file directly in the app.
@@ -54,21 +54,58 @@ Here's how AutoVizAI works, end-to-end:
 - **Matplotlib** – Low-level chart rendering (for converting plots to image)
 
 ### 💻 Web Interface
-- **Streamlit** – Lightweight Python framework to create web apps with zero frontend code
+- **Flask** – Lightweight Python web framework for creating web applications
+- **HTML/CSS/JavaScript** – Frontend interface for data upload and visualization
 
 ### 🤖 Generative AI
 - **Google Generative AI (Gemini 1.5 Flash)** – Used to generate human-like insights from visual charts
 - **Pillow + io.BytesIO** – Converts Matplotlib figures into in-memory image objects for Gemini
 
 ### 🔐 Secrets Management
-- **Streamlit Secrets Manager** – Used to securely store the Gemini API key (.gitignore)
+- **Environment Variables** – Used to securely store the Gemini API key (GOOGLE_API_KEY)
 
 ### 📦 Dependency Management
 - `requirements.txt` – Ensures reproducibility of environments
 
+## 🚀 Deployment
+
+### Live Demo
+The application is deployed on **Render** and accessible at: [https://vizai-flask.onrender.com/](https://vizai-flask.onrender.com/)
+
+### Local Development
+To run the application locally:
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/SowmithBachu/vizai.git
+   cd vizai
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Set up environment variables:**
+   Create a `.env` file in the root directory and add:
+   ```
+   GOOGLE_API_KEY=your_gemini_api_key_here
+   ```
+
+4. **Run the application:**
+   ```bash
+   python app_flask.py
+   ```
+
+5. **Access the application:**
+   Open your browser and go to `http://localhost:5000`
+
+### Environment Variables
+- `GOOGLE_API_KEY`: Your Google Gemini API key (required for AI insights)
+
 ## 🤝 Contributions & Issues
 
-Have ideas to improve AutoVizAI? Found a bug or want to add more chart types?
+Have ideas to improve VizAI? Found a bug or want to add more chart types?
 
 Feel free to:
 
@@ -77,7 +114,18 @@ Feel free to:
 - 📝 Make your changes
 - 🚀 Submit a pull request
 
-> Found an issue or need help? [Open an issue](https://github.com/kailashmannem/vizai/issues) and describe the problem clearly.
+> Found an issue or need help? [Open an issue](https://github.com/SowmithBachu/vizai/issues) and describe the problem clearly.
 
 All contributions — code, design, documentation, or testing — are welcome!
+
+## 📄 License
+
+This project is open source and available under the [MIT License](LICENSE).
+
+## 🙏 Acknowledgments
+
+- Built with Flask and Python
+- Powered by Google Gemini AI
+- Deployed on Render
+- Inspired by the need for simple, AI-powered data visualization tools
 
